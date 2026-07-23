@@ -44,7 +44,5 @@ export async function buildProductMedia(
     hasVideo: Boolean(video),
     videoQuality: video?.quality ?? null,
     videoPlaylistUrl: video?.url ?? null,
-    mediaRanges,
-    videoRanges,
   }
 }

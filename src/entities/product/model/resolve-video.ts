@@ -1,5 +1,5 @@
-import { headOk } from '@/shared/api/http'
 import { productVideoUrl } from '@/shared/lib/media/product-video-url'
+import { resourceExists } from '@/shared/api/http'
 import { VIDEO_QUALITIES } from '@/shared/config/wb'
 
 import type { HostRange } from '@/shared/api/wb/types'
@@ -10,7 +10,7 @@ export type ResolvedVideo = {
   url: string
 }
 
-/** Probes HLS playlists from highest quality down; first HEAD 200 wins. */
+/** Probes HLS playlists from highest quality down; first existing playlist wins. */
 export async function resolveBestVideo(
   nm: number,
   videoRanges: HostRange[],
@@ -24,7 +24,7 @@ export async function resolveBestVideo(
       continue
     }
 
-    if (await headOk(url, { signal })) {
+    if (await resourceExists(url, { signal })) {
       return { quality, url }
     }
   }

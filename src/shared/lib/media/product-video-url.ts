@@ -31,15 +31,3 @@ export function productVideoUrl({
 
   return `https://${host}/vol${vol}/part${part}/${nm}/hls/${quality}/${name}`
 }
-
-export function productVideoBaseUrl(nm: number, ranges: HostRange[]): string | undefined {
-  const vol = nm % 144
-  const part = Math.floor(nm / 1e4)
-  const host = findHostByVol(ranges, vol)
-
-  if (!host) {
-    return undefined
-  }
-
-  return `https://${host}/vol${vol}/part${part}/${nm}`
-}

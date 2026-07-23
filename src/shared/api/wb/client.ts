@@ -1,6 +1,11 @@
-import type { CardDetailResponse, UpstreamsResponse, WbProduct } from '@/shared/api/wb/types'
+import type { UpstreamsResponse, WbProduct } from '@/shared/api/wb/types'
 
+import {
+  parseCardDetailResponse,
+  parseUpstreamsResponse,
+} from '@/shared/api/wb/guards'
 import { WB_CARD_QUERY, WB_ENDPOINTS } from '@/shared/config/wb'
+import { AppError } from '@/shared/api/errors'
 import { getJson } from '@/shared/api/http'
 
 export async function fetchCardByNm(
@@ -16,19 +21,21 @@ export async function fetchCardByNm(
     nm: String(nm),
   })
 
-  const data = await getJson<CardDetailResponse>(
+  const raw = await getJson<unknown>(
     `${WB_ENDPOINTS.cardDetail}?${params.toString()}`,
     { signal },
   )
 
+  const data = parseCardDetailResponse(raw)
   const product = data.products[0]
   if (!product) {
-    throw new Error(`Карточка с артикулом ${nm} не найдена`)
+    throw new AppError('CARD_NOT_FOUND', `Карточка с артикулом ${nm} не найдена`)
   }
 
   return product
 }
 
 export async function fetchUpstreams(signal?: AbortSignal): Promise<UpstreamsResponse> {
-  return getJson<UpstreamsResponse>(WB_ENDPOINTS.upstreams, { signal })
+  const raw = await getJson<unknown>(WB_ENDPOINTS.upstreams, { signal })
+  return parseUpstreamsResponse(raw)
 }

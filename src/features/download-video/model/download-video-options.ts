@@ -6,6 +6,7 @@ export type DownloadVideoVars = {
   playlistUrl: string
   nm: number
   quality: string
+  signal?: AbortSignal
 }
 
 export const downloadVideoKeys = {

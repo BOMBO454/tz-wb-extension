@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { useDownloadPhotos } from '@/features/download-photos'
 import { useDownloadVideo } from '@/features/download-video'
 import { usePhotoSelection } from '@/features/select-photos'
@@ -15,9 +17,20 @@ export function useMediaDownloadModal(nm: number | null, open: boolean) {
   const downloadPhotos = useDownloadPhotos()
   const downloadVideo = useDownloadVideo()
 
+  const cancelPhotos = downloadPhotos.cancel
+  const cancelVideo = downloadVideo.cancel
+
   const isBusy = downloadPhotos.isPending || downloadVideo.isPending
   // v5: isLoading = isPending && isFetching (false when query is disabled)
   const isLoading = mediaQuery.isLoading
+
+  // Cancel in-flight downloads when modal closes
+  useEffect(() => {
+    if (!open) {
+      cancelPhotos()
+      cancelVideo()
+    }
+  }, [open, cancelPhotos, cancelVideo])
 
   const downloadSelectedPhotos = () => {
     if (!media) {

@@ -1,7 +1,8 @@
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { App } from 'antd'
 import { useMutation } from '@tanstack/react-query'
-import { useState } from 'react'
 
+import { isAbortError, toUserMessage } from '@/shared/api/errors'
 import { downloadProductVideo } from '@/features/download-video/lib/download-product-video'
 import { downloadVideoMutationOptions } from '@/features/download-video/model/download-video-options'
 
@@ -11,32 +12,52 @@ import type { DownloadVideoVars } from '@/features/download-video/model/download
 export function useDownloadVideo() {
   const { message } = App.useApp()
   const [progress, setProgress] = useState<DownloadProgress>(null)
+  const abortRef = useRef<AbortController | null>(null)
+
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort()
+    }
+  }, [])
 
   const mutation = useMutation({
     ...downloadVideoMutationOptions(),
-    mutationFn: (vars: DownloadVideoVars) =>
-      downloadProductVideo({
+    mutationFn: (vars: DownloadVideoVars) => {
+      abortRef.current?.abort()
+      const controller = new AbortController()
+      abortRef.current = controller
+
+      return downloadProductVideo({
         ...vars,
-        onProgress: (done, total) => {
-          setProgress({ done, total })
-        },
-      }),
+        signal: vars.signal ?? controller.signal,
+        onProgress: setProgress,
+      })
+    },
     onMutate: () => {
-      setProgress({ done: 0, total: 0 })
+      setProgress({ done: 0, total: 0, phase: 'fetch' })
     },
     onSuccess: (_data, vars) => {
       message.success(`Видео ${vars.quality} сохранено`)
     },
     onError: (error: Error) => {
-      message.error(error.message || 'Не удалось скачать видео')
+      if (isAbortError(error)) {
+        return
+      }
+      message.error(toUserMessage(error, 'Не удалось скачать видео'))
     },
     onSettled: () => {
       setProgress(null)
+      abortRef.current = null
     },
   })
+
+  const cancel = useCallback(() => {
+    abortRef.current?.abort()
+  }, [])
 
   return {
     ...mutation,
     progress,
+    cancel,
   }
 }

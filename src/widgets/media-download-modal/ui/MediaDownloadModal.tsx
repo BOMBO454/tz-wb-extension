@@ -6,7 +6,10 @@ import {
 } from '@ant-design/icons'
 
 import { PhotoGrid } from '@/widgets/media-download-modal/ui/PhotoGrid'
+import { toUserMessage } from '@/shared/api/errors'
 import { useMediaDownloadModal } from '@/widgets/media-download-modal/model/use-media-download-modal'
+
+import type { DownloadPhase, DownloadProgress } from '@/shared/lib/download/progress'
 
 type MediaDownloadModalProps = {
   open: boolean
@@ -19,6 +22,45 @@ function progressPercent(done: number, total: number): number {
     return 0
   }
   return Math.round((done / total) * 100)
+}
+
+function phaseLabel(phase: DownloadPhase | undefined, kind: 'photos' | 'video'): string {
+  if (phase === 'zip') {
+    return 'Собираем ZIP…'
+  }
+  if (phase === 'remux') {
+    return 'Собираем MP4…'
+  }
+  if (kind === 'photos') {
+    return 'Загрузка фото'
+  }
+  return 'Сегменты видео'
+}
+
+function ProgressBlock({
+  progress,
+  kind,
+}: {
+  progress: NonNullable<DownloadProgress>
+  kind: 'photos' | 'video'
+}) {
+  const isIndeterminate =
+    progress.phase === 'remux' || progress.phase === 'zip' || progress.total <= 0
+
+  return (
+    <div>
+      <Typography.Text type="secondary">
+        {phaseLabel(progress.phase, kind)}
+        {!isIndeterminate && ` ${progress.done}/${progress.total}`}
+      </Typography.Text>
+      <Progress
+        percent={isIndeterminate ? 100 : progressPercent(progress.done, progress.total)}
+        size="small"
+        status="active"
+        showInfo={!isIndeterminate}
+      />
+    </div>
+  )
 }
 
 function modalTitle(
@@ -75,11 +117,7 @@ export function MediaDownloadModal({ open, nm, onClose }: MediaDownloadModalProp
           type="error"
           showIcon
           message="Не удалось получить медиа"
-          description={
-            mediaQuery.error instanceof Error
-              ? mediaQuery.error.message
-              : 'Неизвестная ошибка'
-          }
+          description={toUserMessage(mediaQuery.error, 'Неизвестная ошибка')}
         />
       )}
 
@@ -111,31 +149,8 @@ export function MediaDownloadModal({ open, nm, onClose }: MediaDownloadModalProp
             onToggle={selection.toggle}
           />
 
-          {photosProgress && (
-            <div>
-              <Typography.Text type="secondary">
-                Фото {photosProgress.done}/{photosProgress.total || '…'}
-              </Typography.Text>
-              <Progress
-                percent={progressPercent(photosProgress.done, photosProgress.total)}
-                size="small"
-                status="active"
-              />
-            </div>
-          )}
-
-          {videoProgress && (
-            <div>
-              <Typography.Text type="secondary">
-                Сегменты видео {videoProgress.done}/{videoProgress.total || '…'}
-              </Typography.Text>
-              <Progress
-                percent={progressPercent(videoProgress.done, videoProgress.total)}
-                size="small"
-                status="active"
-              />
-            </div>
-          )}
+          {photosProgress && <ProgressBlock progress={photosProgress} kind="photos" />}
+          {videoProgress && <ProgressBlock progress={videoProgress} kind="video" />}
 
           <div className="flex flex-wrap gap-2 border-t border-neutral-200 pt-4">
             <Button

@@ -1,4 +1,3 @@
-import type { HostRange } from '@/shared/api/wb/types'
 import type { VideoQuality } from '@/shared/config/wb'
 
 export type ProductMedia = {
@@ -11,12 +10,4 @@ export type ProductMedia = {
   hasVideo: boolean
   videoQuality: VideoQuality | null
   videoPlaylistUrl: string | null
-  mediaRanges: HostRange[]
-  videoRanges: HostRange[]
-}
-
-export type ProductPhoto = {
-  index: number
-  previewUrl: string
-  downloadUrl: string
 }

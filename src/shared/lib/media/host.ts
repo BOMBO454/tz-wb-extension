@@ -1,4 +1,4 @@
-import type { HostRange } from "@/shared/api/wb/types";
+import type { HostRange } from '@/shared/api/wb/types'
 
 export function findHostByVol(
   ranges: HostRange[],
@@ -7,18 +7,18 @@ export function findHostByVol(
   const route = ranges.find(
     ({ vol_range_from, vol_range_to }) =>
       vol >= vol_range_from && vol <= vol_range_to,
-  );
-  return route?.host;
+  )
+  return route?.host
 }
 
 export function extractRangeHosts(
-  routeMap: Array<{ method: string; hosts: HostRange[] }> | undefined,
+  routeMap?: Array<{ method: string; hosts: HostRange[] }>,
 ): HostRange[] {
   if (!routeMap?.length) {
-    return [];
+    return []
   }
 
   const rangeEntry =
-    routeMap.find((entry) => entry.method === "range") ?? routeMap[0];
-  return rangeEntry?.hosts ?? [];
+    routeMap.find((entry) => entry.method === 'range') ?? routeMap[0]
+  return rangeEntry?.hosts ?? []
 }

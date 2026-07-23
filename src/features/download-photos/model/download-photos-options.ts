@@ -5,6 +5,7 @@ import { downloadPhotosZip } from '@/features/download-photos/lib/download-photo
 export type DownloadPhotosVars = {
   urls: string[]
   nm: number
+  signal?: AbortSignal
 }
 
 export const downloadPhotosKeys = {
