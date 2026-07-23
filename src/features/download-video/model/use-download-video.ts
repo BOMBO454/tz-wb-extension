@@ -1,24 +1,25 @@
-import { useMutation } from '@tanstack/react-query'
 import { App } from 'antd'
-import { useCallback, useState } from 'react'
-import { downloadProductVideo } from '@/features/download-video/lib/download-product-video'
-import type { DownloadProgress } from '@/shared/lib/download/progress'
+import { useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
 
-type DownloadVideoVars = {
-  playlistUrl: string
-  nm: number
-  quality: string
-}
+import { downloadProductVideo } from '@/features/download-video/lib/download-product-video'
+import { downloadVideoMutationOptions } from '@/features/download-video/model/download-video-options'
+
+import type { DownloadProgress } from '@/shared/lib/download/progress'
+import type { DownloadVideoVars } from '@/features/download-video/model/download-video-options'
 
 export function useDownloadVideo() {
   const { message } = App.useApp()
   const [progress, setProgress] = useState<DownloadProgress>(null)
 
   const mutation = useMutation({
+    ...downloadVideoMutationOptions(),
     mutationFn: (vars: DownloadVideoVars) =>
       downloadProductVideo({
         ...vars,
-        onProgress: (done, total) => setProgress({ done, total }),
+        onProgress: (done, total) => {
+          setProgress({ done, total })
+        },
       }),
     onMutate: () => {
       setProgress({ done: 0, total: 0 })
@@ -34,11 +35,8 @@ export function useDownloadVideo() {
     },
   })
 
-  const resetProgress = useCallback(() => setProgress(null), [])
-
   return {
     ...mutation,
     progress,
-    resetProgress,
   }
 }

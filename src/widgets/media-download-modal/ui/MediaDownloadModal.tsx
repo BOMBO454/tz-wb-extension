@@ -1,14 +1,12 @@
+import { Alert, Button, Modal, Progress, Space, Spin, Typography } from 'antd'
 import {
   CheckSquareOutlined,
   DownloadOutlined,
   VideoCameraOutlined,
 } from '@ant-design/icons'
-import { Alert, Button, Modal, Progress, Space, Spin, Typography } from 'antd'
-import { useProductMediaQuery } from '@/entities/product'
-import { useDownloadPhotos } from '@/features/download-photos'
-import { useDownloadVideo } from '@/features/download-video'
-import { usePhotoSelection } from '@/features/select-photos'
+
 import { PhotoGrid } from '@/widgets/media-download-modal/ui/PhotoGrid'
+import { useMediaDownloadModal } from '@/widgets/media-download-modal/model/use-media-download-modal'
 
 type MediaDownloadModalProps = {
   open: boolean
@@ -37,39 +35,17 @@ function modalTitle(
 }
 
 export function MediaDownloadModal({ open, nm, onClose }: MediaDownloadModalProps) {
-  const mediaQuery = useProductMediaQuery(nm, open && nm !== null)
-  const media = mediaQuery.data
-
-  const selection = usePhotoSelection(media?.previewUrls.length ?? 0, media?.nm)
-  const downloadPhotos = useDownloadPhotos()
-  const downloadVideo = useDownloadVideo()
-
-  const isBusy = downloadPhotos.isPending || downloadVideo.isPending
-  const isLoading = mediaQuery.isPending || mediaQuery.isFetching
-
-  const handleDownloadPhotos = () => {
-    if (!media) {
-      return
-    }
-
-    const urls = selection.selectedIndexes
-      .map((index) => media.downloadUrls[index])
-      .filter((url): url is string => Boolean(url))
-
-    downloadPhotos.mutate({ urls, nm: media.nm })
-  }
-
-  const handleDownloadVideo = () => {
-    if (!media?.videoPlaylistUrl || !media.videoQuality) {
-      return
-    }
-
-    downloadVideo.mutate({
-      playlistUrl: media.videoPlaylistUrl,
-      nm: media.nm,
-      quality: media.videoQuality,
-    })
-  }
+  const {
+    mediaQuery,
+    media,
+    selection,
+    downloadPhotos,
+    downloadVideo,
+    isBusy,
+    isLoading,
+    downloadSelectedPhotos,
+    downloadMediaVideo,
+  } = useMediaDownloadModal(nm, open)
 
   const photosProgress = downloadPhotos.progress
   const videoProgress = downloadVideo.progress
@@ -167,7 +143,7 @@ export function MediaDownloadModal({ open, nm, onClose }: MediaDownloadModalProp
               icon={<DownloadOutlined />}
               loading={downloadPhotos.isPending}
               disabled={selection.selectedCount === 0 || isBusy}
-              onClick={handleDownloadPhotos}
+              onClick={downloadSelectedPhotos}
             >
               Скачать фото ({selection.selectedCount})
             </Button>
@@ -176,7 +152,7 @@ export function MediaDownloadModal({ open, nm, onClose }: MediaDownloadModalProp
               icon={<VideoCameraOutlined />}
               loading={downloadVideo.isPending}
               disabled={!media.hasVideo || isBusy}
-              onClick={handleDownloadVideo}
+              onClick={downloadMediaVideo}
             >
               {media.hasVideo
                 ? `Скачать видео (${media.videoQuality})`

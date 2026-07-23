@@ -1,8 +1,12 @@
-import { WB_CARD_QUERY, WB_ENDPOINTS } from '@/shared/config/wb'
-import { getJson } from '@/shared/api/http'
 import type { CardDetailResponse, UpstreamsResponse, WbProduct } from '@/shared/api/wb/types'
 
-export async function fetchCardByNm(nm: number): Promise<WbProduct> {
+import { WB_CARD_QUERY, WB_ENDPOINTS } from '@/shared/config/wb'
+import { getJson } from '@/shared/api/http'
+
+export async function fetchCardByNm(
+  nm: number,
+  signal?: AbortSignal,
+): Promise<WbProduct> {
   const params = new URLSearchParams({
     appType: String(WB_CARD_QUERY.appType),
     curr: WB_CARD_QUERY.curr,
@@ -14,6 +18,7 @@ export async function fetchCardByNm(nm: number): Promise<WbProduct> {
 
   const data = await getJson<CardDetailResponse>(
     `${WB_ENDPOINTS.cardDetail}?${params.toString()}`,
+    { signal },
   )
 
   const product = data.products[0]
@@ -24,6 +29,6 @@ export async function fetchCardByNm(nm: number): Promise<WbProduct> {
   return product
 }
 
-export async function fetchUpstreams(): Promise<UpstreamsResponse> {
-  return getJson<UpstreamsResponse>(WB_ENDPOINTS.upstreams)
+export async function fetchUpstreams(signal?: AbortSignal): Promise<UpstreamsResponse> {
+  return getJson<UpstreamsResponse>(WB_ENDPOINTS.upstreams, { signal })
 }

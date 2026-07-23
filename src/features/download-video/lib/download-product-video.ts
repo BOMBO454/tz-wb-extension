@@ -1,9 +1,9 @@
-import { getArrayBuffer, getText } from '@/shared/api/http'
-import { mapWithConcurrency } from '@/shared/lib/download/fetch-with-concurrency'
 import {
   concatUint8Arrays,
   remuxTsToMp4,
 } from '@/shared/lib/download/remux-ts-to-mp4'
+import { getArrayBuffer, getText } from '@/shared/api/http'
+import { mapWithConcurrency } from '@/shared/lib/download/fetch-with-concurrency'
 import { saveBlob } from '@/shared/lib/download/save-blob'
 
 type DownloadProductVideoParams = {

@@ -1,5 +1,5 @@
-import { HomePage } from '@/pages/home'
 import { AntdProvider } from '@/app/providers/AntdProvider'
+import { HomePage } from '@/pages/home'
 import { QueryProvider } from '@/app/providers/QueryProvider'
 
 export function App() {

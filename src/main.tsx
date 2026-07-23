@@ -1,7 +1,9 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { App } from '@/app/App'
 import './index.css'
+
+import { createRoot } from 'react-dom/client'
+import { StrictMode } from 'react'
+
+import { App } from '@/app/App'
 
 const rootElement = document.getElementById('root')
 

@@ -47,6 +47,7 @@ npm run typecheck # tsc project references
 | promise/param-names, no-nesting | предсказуемые async-ошибки |
 | no-console (кроме warn/error) | не тащим debug в прод |
 | unicorn (выборочно) | современный JS без педантичного шума |
+| `sort-imports` | порядок: none → all → multiple → single, затем A–Z по первому binding; группы через пустую строку |
 
 **Что сознательно выключено:**
 
@@ -128,10 +129,14 @@ src/
   shared/       # api, config, lib (media URLs, zip helpers, remux)
 ```
 
-Server state:
+Server state (TanStack Query v5):
 
-- `useProductMediaQuery` — `ensureQueryData` для upstreams + card, затем `buildProductMedia`
-- mutations — zip фото / video remux + progress в UI
+- `productQueries` — `queryOptions` factories + hierarchical keys
+- `useProductMediaQuery` / `useCardQuery` / `useUpstreamsQuery` — хуки поверх options
+- media `queryFn` — `client.ensureQueryData` + `AbortSignal`
+- `usePrefetchProductMedia` — prefetch при сабмите артикула
+- `downloadPhotosMutationOptions` / `downloadVideoMutationOptions` + hooks
+- UI: `useMediaDownloadModal`, `useHomePage` (тонкие компоненты)
 
 ## Что бы доделали для продакшена
 

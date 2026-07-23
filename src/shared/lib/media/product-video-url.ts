@@ -1,6 +1,7 @@
+import { findHostByVol } from '@/shared/lib/media/host'
+
 import type { HostRange } from '@/shared/api/wb/types'
 import type { VideoQuality } from '@/shared/config/wb'
-import { findHostByVol } from '@/shared/lib/media/host'
 
 type ProductVideoUrlParams = {
   nm: number

@@ -1,4 +1,5 @@
 import JSZip from 'jszip'
+
 import { getArrayBuffer } from '@/shared/api/http'
 import { mapWithConcurrency } from '@/shared/lib/download/fetch-with-concurrency'
 import { saveBlob } from '@/shared/lib/download/save-blob'

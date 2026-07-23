@@ -1,13 +1,16 @@
 import type { UpstreamsResponse, WbProduct } from '@/shared/api/wb/types'
-import { IMAGE_SIZES } from '@/shared/config/wb'
-import { extractRangeHosts } from '@/shared/lib/media/host'
+
 import { buildProductImageUrls } from '@/shared/lib/media/product-image-url'
+import { extractRangeHosts } from '@/shared/lib/media/host'
+import { IMAGE_SIZES } from '@/shared/config/wb'
 import { resolveBestVideo } from '@/entities/product/model/resolve-video'
+
 import type { ProductMedia } from '@/entities/product/model/types'
 
 export async function buildProductMedia(
   product: WbProduct,
   upstreams: UpstreamsResponse,
+  signal?: AbortSignal,
 ): Promise<ProductMedia> {
   const mediaRanges = extractRangeHosts(
     upstreams.origin.mediabasket_route_map ?? upstreams.recommend.mediabasket_route_map,
@@ -29,7 +32,7 @@ export async function buildProductMedia(
     IMAGE_SIZES.download,
   )
 
-  const video = await resolveBestVideo(product.id, videoRanges)
+  const video = await resolveBestVideo(product.id, videoRanges, signal)
 
   return {
     nm: product.id,

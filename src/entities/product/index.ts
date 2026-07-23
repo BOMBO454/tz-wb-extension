@@ -1,6 +1,9 @@
 export {
   productKeys,
+  productQueries,
+  prefetchProductMedia,
   useCardQuery,
+  usePrefetchProductMedia,
   useProductMediaQuery,
   useUpstreamsQuery,
 } from './api/product-queries'

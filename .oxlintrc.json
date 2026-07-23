@@ -169,6 +169,17 @@
       { "allow": ["**/*.css", "**/*.scss"] }
     ],
 
+    "sort-imports": [
+      "error",
+      {
+        "ignoreCase": true,
+        "ignoreDeclarationSort": false,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"],
+        "allowSeparatedGroups": true
+      }
+    ],
+
     "promise/no-return-wrap": "error",
     "promise/param-names": "error",
     "promise/no-nesting": "error",

@@ -1,23 +1,25 @@
-import { useMutation } from '@tanstack/react-query'
 import { App } from 'antd'
-import { useCallback, useState } from 'react'
-import { downloadPhotosZip } from '@/features/download-photos/lib/download-photos-zip'
-import type { DownloadProgress } from '@/shared/lib/download/progress'
+import { useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
 
-type DownloadPhotosVars = {
-  urls: string[]
-  nm: number
-}
+import { downloadPhotosMutationOptions } from '@/features/download-photos/model/download-photos-options'
+import { downloadPhotosZip } from '@/features/download-photos/lib/download-photos-zip'
+
+import type { DownloadPhotosVars } from '@/features/download-photos/model/download-photos-options'
+import type { DownloadProgress } from '@/shared/lib/download/progress'
 
 export function useDownloadPhotos() {
   const { message } = App.useApp()
   const [progress, setProgress] = useState<DownloadProgress>(null)
 
   const mutation = useMutation({
+    ...downloadPhotosMutationOptions(),
     mutationFn: (vars: DownloadPhotosVars) =>
       downloadPhotosZip({
         ...vars,
-        onProgress: (done, total) => setProgress({ done, total }),
+        onProgress: (done, total) => {
+          setProgress({ done, total })
+        },
       }),
     onMutate: () => {
       setProgress({ done: 0, total: 0 })
@@ -33,11 +35,8 @@ export function useDownloadPhotos() {
     },
   })
 
-  const resetProgress = useCallback(() => setProgress(null), [])
-
   return {
     ...mutation,
     progress,
-    resetProgress,
   }
 }

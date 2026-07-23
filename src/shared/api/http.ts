@@ -46,9 +46,9 @@ export async function getText(url: string, init?: RequestInit): Promise<string> 
   return response.text()
 }
 
-export async function headOk(url: string): Promise<boolean> {
+export async function headOk(url: string, init?: RequestInit): Promise<boolean> {
   try {
-    const response = await fetch(url, { method: 'HEAD' })
+    const response = await fetch(url, { ...init, method: 'HEAD' })
     return response.ok
   } catch {
     return false

@@ -1,6 +1,7 @@
 import { App, ConfigProvider } from 'antd'
-import ruRU from 'antd/locale/ru_RU'
 import type { ReactNode } from 'react'
+
+import ruRU from 'antd/locale/ru_RU'
 
 type AntdProviderProps = {
   children: ReactNode

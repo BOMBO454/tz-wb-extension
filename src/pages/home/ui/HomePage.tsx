@@ -1,11 +1,11 @@
-import { useState } from 'react'
 import { Card, Typography } from 'antd'
+
 import { ArticleForm } from '@/widgets/article-form'
 import { MediaDownloadModal } from '@/widgets/media-download-modal'
+import { useHomePage } from '@/pages/home/model/use-home-page'
 
 export function HomePage() {
-  const [nm, setNm] = useState<number | null>(null)
-  const [modalOpen, setModalOpen] = useState(false)
+  const { nm, modalOpen, openMediaForArticle, closeModal } = useHomePage()
 
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-4 py-10">
@@ -18,19 +18,10 @@ export function HomePage() {
           скачиванием медиа.
         </Typography.Paragraph>
 
-        <ArticleForm
-          onSubmit={(article) => {
-            setNm(article)
-            setModalOpen(true)
-          }}
-        />
+        <ArticleForm onSubmit={openMediaForArticle} />
       </Card>
 
-      <MediaDownloadModal
-        open={modalOpen}
-        nm={nm}
-        onClose={() => setModalOpen(false)}
-      />
+      <MediaDownloadModal open={modalOpen} nm={nm} onClose={closeModal} />
     </div>
   )
 }

@@ -1,5 +1,5 @@
-import { DownloadOutlined } from '@ant-design/icons'
 import { Button, Form, Input, Space, Typography } from 'antd'
+import { DownloadOutlined } from '@ant-design/icons'
 
 export type ArticleFormValues = {
   article: string

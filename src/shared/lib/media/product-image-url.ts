@@ -1,5 +1,6 @@
-import type { HostRange } from '@/shared/api/wb/types'
 import { findHostByVol } from '@/shared/lib/media/host'
+
+import type { HostRange } from '@/shared/api/wb/types'
 
 type ProductImageUrlParams = {
   nm: number

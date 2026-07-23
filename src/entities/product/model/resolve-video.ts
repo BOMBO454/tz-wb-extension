@@ -1,8 +1,9 @@
-import type { HostRange } from '@/shared/api/wb/types'
 import { headOk } from '@/shared/api/http'
-import { VIDEO_QUALITIES } from '@/shared/config/wb'
-import type { VideoQuality } from '@/shared/config/wb'
 import { productVideoUrl } from '@/shared/lib/media/product-video-url'
+import { VIDEO_QUALITIES } from '@/shared/config/wb'
+
+import type { HostRange } from '@/shared/api/wb/types'
+import type { VideoQuality } from '@/shared/config/wb'
 
 export type ResolvedVideo = {
   quality: VideoQuality
@@ -13,14 +14,17 @@ export type ResolvedVideo = {
 export async function resolveBestVideo(
   nm: number,
   videoRanges: HostRange[],
+  signal?: AbortSignal,
 ): Promise<ResolvedVideo | null> {
   for (const quality of VIDEO_QUALITIES) {
+    signal?.throwIfAborted()
+
     const url = productVideoUrl({ nm, ranges: videoRanges, quality })
     if (!url) {
       continue
     }
 
-    if (await headOk(url)) {
+    if (await headOk(url, { signal })) {
       return { quality, url }
     }
   }
