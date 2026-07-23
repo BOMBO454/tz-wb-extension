@@ -5,6 +5,7 @@ import {
 import { getArrayBuffer, getText } from '@/shared/api/http'
 import { AppError } from '@/shared/api/errors'
 import { mapWithConcurrency } from '@/shared/lib/download/fetch-with-concurrency'
+import { parseM3u8TotalDurationSec } from '@/shared/lib/download/patch-mp4-duration'
 import { saveBlob } from '@/shared/lib/download/save-blob'
 import { withRetry } from '@/shared/lib/download/retry'
 
@@ -79,6 +80,7 @@ export async function downloadProductVideo({
     { attempts: 3, signal },
   )
   const segmentNames = parseM3u8Segments(playlist)
+  const durationSec = parseM3u8TotalDurationSec(playlist)
 
   if (segmentNames.length === 0) {
     throw new AppError('EMPTY_PLAYLIST', 'В playlist нет сегментов')
@@ -95,7 +97,7 @@ export async function downloadProductVideo({
 
   let mp4Bytes: Uint8Array
   try {
-    mp4Bytes = remuxTsToMp4(tsBytes)
+    mp4Bytes = remuxTsToMp4(tsBytes, { durationSec })
   } catch (error) {
     const reason = error instanceof Error ? error.message : 'unknown'
     throw new AppError(

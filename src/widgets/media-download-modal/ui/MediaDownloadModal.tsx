@@ -152,7 +152,7 @@ export function MediaDownloadModal({ open, nm, onClose }: MediaDownloadModalProp
           {photosProgress && <ProgressBlock progress={photosProgress} kind="photos" />}
           {videoProgress && <ProgressBlock progress={videoProgress} kind="video" />}
 
-          <div className="flex flex-wrap gap-2 border-t border-neutral-200 pt-4">
+          <div className="flex flex-wrap gap-2 border-t border-[var(--wb-border)]/50 pt-4">
             <Button
               type="primary"
               icon={<DownloadOutlined />}

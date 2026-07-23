@@ -13,7 +13,7 @@ export function PhotoGrid({ previewUrls, selected, onToggle }: PhotoGridProps) {
       {previewUrls.map((url, index) => {
         const isSelected = selected.has(index)
         const borderClass = isSelected
-          ? 'border-blue-500 shadow-sm'
+          ? 'border-[var(--wb-primary)] shadow-sm'
           : 'border-transparent opacity-80 hover:opacity-100'
 
         return (
@@ -21,11 +21,11 @@ export function PhotoGrid({ previewUrls, selected, onToggle }: PhotoGridProps) {
             key={url}
             type="button"
             onClick={() => onToggle(index)}
-            className={`group relative overflow-hidden rounded-lg border-2 bg-white p-0 text-left transition ${borderClass}`}
+            className={`group relative overflow-hidden rounded-2xl border-2 bg-white p-0 text-left transition ${borderClass}`}
             aria-pressed={isSelected}
             aria-label={`Фото ${index + 1}${isSelected ? ', выбрано' : ''}`}
           >
-            <div className="aspect-[3/4] w-full overflow-hidden bg-neutral-100">
+            <div className="aspect-[3/4] w-full overflow-hidden bg-[var(--wb-border)]/40">
               <Image
                 src={url}
                 alt={`Фото ${index + 1}`}
@@ -36,10 +36,10 @@ export function PhotoGrid({ previewUrls, selected, onToggle }: PhotoGridProps) {
             </div>
 
             {isSelected && (
-              <CheckCircleFilled className="absolute right-2 top-2 text-xl text-blue-500 drop-shadow" />
+              <CheckCircleFilled className="absolute right-2 top-2 text-xl text-[var(--wb-primary)] drop-shadow" />
             )}
 
-            <span className="absolute bottom-1 left-2 rounded bg-black/50 px-1.5 text-xs text-white">
+            <span className="absolute bottom-1 left-2 rounded-md bg-black/50 px-1.5 text-xs text-white">
               {index + 1}
             </span>
           </button>

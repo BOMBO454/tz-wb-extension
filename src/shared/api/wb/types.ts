@@ -1,7 +1,8 @@
+/** Host entry from route map. Range maps include vol bounds; mod maps often only `host`. */
 export type HostRange = {
-  vol_range_from: number
-  vol_range_to: number
   host: string
+  vol_range_from?: number
+  vol_range_to?: number
 }
 
 export type RouteMapEntry = {

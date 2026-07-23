@@ -9,8 +9,8 @@ export function HomePage() {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-4 py-10">
-      <Card className="shadow-sm">
-        <Typography.Title level={2} className="!mb-1">
+      <Card variant="borderless" className="shadow-md">
+        <Typography.Title level={2} className="!mb-1 !text-[var(--wb-text)]">
           Скачать фото / видео с WB
         </Typography.Title>
         <Typography.Paragraph type="secondary" className="!mb-6">

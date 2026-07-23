@@ -16,6 +16,12 @@ describe('findHostByVol', () => {
     expect(findHostByVol(ranges, 200)).toBe('videonme-02.wbbasket.ru')
   })
 
+  it('skips host-only mod entries', () => {
+    expect(
+      findHostByVol([{ host: 'mod-only.example' }, ...ranges], 10),
+    ).toBe('videonme-01.wbbasket.ru')
+  })
+
   it('returns undefined when out of range', () => {
     expect(findHostByVol(ranges, 9999)).toBeUndefined()
   })
@@ -24,10 +30,16 @@ describe('findHostByVol', () => {
 describe('extractRangeHosts', () => {
   it('prefers method=range entry', () => {
     const hosts = extractRangeHosts([
-      { method: 'mod', hosts: [{ vol_range_from: 0, vol_range_to: 1, host: 'mod.example' }] },
+      { method: 'mod', hosts: [{ host: 'mod.example' }] },
       { method: 'range', hosts: ranges },
     ])
     expect(hosts).toEqual(ranges)
+  })
+
+  it('returns empty for mod-only maps (no vol bounds)', () => {
+    expect(
+      extractRangeHosts([{ method: 'mod', hosts: [{ host: 'mod.example' }] }]),
+    ).toEqual([])
   })
 
   it('returns empty array for missing map', () => {
