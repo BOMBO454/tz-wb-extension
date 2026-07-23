@@ -1,28 +1,9 @@
 import type { UpstreamsResponse, WbProduct } from '@/shared/api/wb/types'
-import { IMAGE_SIZES, VIDEO_QUALITIES, type VideoQuality } from '@/shared/config/wb'
-import { headOk } from '@/shared/api/http'
+import { IMAGE_SIZES } from '@/shared/config/wb'
 import { extractRangeHosts } from '@/shared/lib/media/host'
 import { buildProductImageUrls } from '@/shared/lib/media/product-image-url'
-import { productVideoUrl } from '@/shared/lib/media/product-video-url'
+import { resolveBestVideo } from '@/entities/product/model/resolve-video'
 import type { ProductMedia } from '@/entities/product/model/types'
-
-async function resolveBestVideo(
-  nm: number,
-  videoRanges: ReturnType<typeof extractRangeHosts>,
-): Promise<{ quality: VideoQuality; url: string } | null> {
-  for (const quality of VIDEO_QUALITIES) {
-    const url = productVideoUrl({ nm, ranges: videoRanges, quality })
-    if (!url) {
-      continue
-    }
-
-    if (await headOk(url)) {
-      return { quality, url }
-    }
-  }
-
-  return null
-}
 
 export async function buildProductMedia(
   product: WbProduct,

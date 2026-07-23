@@ -13,7 +13,7 @@ export async function mapWithConcurrency<T, R>(
   }
 
   const limit = Math.max(1, Math.min(concurrency, items.length))
-  const results = new Array<R>(items.length)
+  const results = Array.from<R>({ length: items.length })
   let nextIndex = 0
   let done = 0
 

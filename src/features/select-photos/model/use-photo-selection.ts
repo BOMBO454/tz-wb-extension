@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 /**
- * Multi-select for photo indexes. All selected by default when list changes.
+ * Multi-select for photo indexes.
+ * Defaults to all selected; resets when photoCount or product nm changes.
  */
-export function usePhotoSelection(photoCount: number) {
+export function usePhotoSelection(photoCount: number, nm?: number | null) {
   const allIndexes = useMemo(
     () => Array.from({ length: photoCount }, (_, index) => index),
     [photoCount],
@@ -13,7 +14,7 @@ export function usePhotoSelection(photoCount: number) {
 
   useEffect(() => {
     setSelected(new Set(allIndexes))
-  }, [allIndexes])
+  }, [allIndexes, nm])
 
   const toggle = useCallback((index: number) => {
     setSelected((prev) => {

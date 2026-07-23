@@ -3,7 +3,7 @@ import {
   DownloadOutlined,
   VideoCameraOutlined,
 } from '@ant-design/icons'
-import { Alert, Button, Modal, Space, Spin, Typography } from 'antd'
+import { Alert, Button, Modal, Progress, Space, Spin, Typography } from 'antd'
 import { useProductMediaQuery } from '@/entities/product'
 import { useDownloadPhotos } from '@/features/download-photos'
 import { useDownloadVideo } from '@/features/download-video'
@@ -16,17 +16,36 @@ type MediaDownloadModalProps = {
   onClose: () => void
 }
 
+function progressPercent(done: number, total: number): number {
+  if (total <= 0) {
+    return 0
+  }
+  return Math.round((done / total) * 100)
+}
+
+function modalTitle(
+  media: { brand: string; name: string } | undefined,
+  nm: number | null,
+): string {
+  if (media) {
+    return `${media.brand} — ${media.name}`
+  }
+  if (nm) {
+    return `Артикул ${nm}`
+  }
+  return 'Медиа карточки'
+}
+
 export function MediaDownloadModal({ open, nm, onClose }: MediaDownloadModalProps) {
   const mediaQuery = useProductMediaQuery(nm, open && nm !== null)
   const media = mediaQuery.data
-  // no data + no error while modal is open => still loading (upstreams or card)
-  const isMediaLoading = open && nm !== null && !media && !mediaQuery.isError
 
-  const selection = usePhotoSelection(media?.previewUrls.length ?? 0)
+  const selection = usePhotoSelection(media?.previewUrls.length ?? 0, media?.nm)
   const downloadPhotos = useDownloadPhotos()
   const downloadVideo = useDownloadVideo()
 
   const isBusy = downloadPhotos.isPending || downloadVideo.isPending
+  const isLoading = mediaQuery.isPending || mediaQuery.isFetching
 
   const handleDownloadPhotos = () => {
     if (!media) {
@@ -52,24 +71,21 @@ export function MediaDownloadModal({ open, nm, onClose }: MediaDownloadModalProp
     })
   }
 
+  const photosProgress = downloadPhotos.progress
+  const videoProgress = downloadVideo.progress
+
   return (
     <Modal
       open={open}
       onCancel={isBusy ? undefined : onClose}
-      title={
-        media
-          ? `${media.brand} — ${media.name}`
-          : nm
-            ? `Артикул ${nm}`
-            : 'Медиа карточки'
-      }
+      title={modalTitle(media, nm)}
       width={880}
       footer={null}
       destroyOnHidden
       maskClosable={!isBusy}
       className="top-8"
     >
-      {isMediaLoading && (
+      {isLoading && !media && (
         <div className="flex min-h-48 flex-col items-center justify-center gap-3">
           <Spin size="large" />
           <Typography.Text type="secondary">
@@ -78,7 +94,7 @@ export function MediaDownloadModal({ open, nm, onClose }: MediaDownloadModalProp
         </div>
       )}
 
-      {mediaQuery.isError && (
+      {mediaQuery.isError && !media && (
         <Alert
           type="error"
           showIcon
@@ -104,10 +120,10 @@ export function MediaDownloadModal({ open, nm, onClose }: MediaDownloadModalProp
             </Typography.Text>
 
             <Space wrap>
-              <Button size="small" onClick={selection.selectAll}>
+              <Button size="small" onClick={selection.selectAll} disabled={isBusy}>
                 Выбрать все
               </Button>
-              <Button size="small" onClick={selection.clearAll}>
+              <Button size="small" onClick={selection.clearAll} disabled={isBusy}>
                 Снять все
               </Button>
             </Space>
@@ -118,6 +134,32 @@ export function MediaDownloadModal({ open, nm, onClose }: MediaDownloadModalProp
             selected={selection.selected}
             onToggle={selection.toggle}
           />
+
+          {photosProgress && (
+            <div>
+              <Typography.Text type="secondary">
+                Фото {photosProgress.done}/{photosProgress.total || '…'}
+              </Typography.Text>
+              <Progress
+                percent={progressPercent(photosProgress.done, photosProgress.total)}
+                size="small"
+                status="active"
+              />
+            </div>
+          )}
+
+          {videoProgress && (
+            <div>
+              <Typography.Text type="secondary">
+                Сегменты видео {videoProgress.done}/{videoProgress.total || '…'}
+              </Typography.Text>
+              <Progress
+                percent={progressPercent(videoProgress.done, videoProgress.total)}
+                size="small"
+                status="active"
+              />
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-2 border-t border-neutral-200 pt-4">
             <Button
